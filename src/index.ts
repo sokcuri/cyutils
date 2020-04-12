@@ -49,16 +49,16 @@ export class CyUtils {
     // Priconne.API.signup();
   }
 
-  public async Logout(): Promise<void> {
+  public async logout(): Promise<void> {
     // Logout
     return;
   }
 
-  public async GetClanInfo(): Promise<void> {
+  public async getClanInfo(): Promise<void> {
     // Priconne.API.Clan.OthersInfo();
   }
 
-  public async GetProfile(): Promise<void> {
+  public async getProfile(): Promise<void> {
 
     // Priconne.API.Profile.GetProfile();
   }
