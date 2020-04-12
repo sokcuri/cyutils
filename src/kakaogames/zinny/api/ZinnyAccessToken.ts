@@ -28,7 +28,7 @@ interface Headers {
   'User-Agent': string;
 }
 
-function makeRequest(obj: { [name: string]: any }): Request {
+function makeRequest(obj: { [name: string]: string }): Request {
   return {
     appVer: obj.appVer,
     sdkVer: obj.sdkVer,
@@ -41,7 +41,7 @@ function makeRequest(obj: { [name: string]: any }): Request {
   }
 }
 
-function makeHeaders(obj: { [name: string]: any }): Headers {
+function makeHeaders(obj: { [name: string]: string }): Headers {
   return {
     'appId': obj.appId,
     'appSecret': obj.appSecret,
@@ -52,13 +52,10 @@ function makeHeaders(obj: { [name: string]: any }): Headers {
 }
 
 async function CreateWithPreviousInfo(config: Request, adidInfo: AdidInfo): Promise<Response> {
-  const ZinnyError = error.ZinnyError;
-  const ZinnyAccessToken = error.ZinnyAccessToken;
+  const url = EndPoint.AccessTokenCreateWithPreviousInfo;
 
-  const url = EndPoint.AccessToken_CreateWithPreviousInfo;
-
-  const body = makeRequest(Object.assign(config, adidInfo));
-  const headers = makeHeaders(Object.assign(config, { 'Content-Type': 'application/json;charset=UTF-8'} ));
+  const body = makeRequest({ ...config, ...adidInfo });
+  const headers = makeHeaders({ ...config, 'Content-Type': 'application/json;charset=UTF-8' });
 
   try {
     const resp = await fetch(url, { method: 'post', body: JSON.stringify(body), headers });
@@ -69,17 +66,19 @@ async function CreateWithPreviousInfo(config: Request, adidInfo: AdidInfo): Prom
     }
 
     return json;
-  } catch(e) {
-    if (e instanceof ZinnyError) {
+  } catch (e) {
+    if (e instanceof error.ZinnyError) {
       throw e;
     }
     if (e instanceof Error) {
-      if (e['type'] == 'system') {
-        throw new ZinnyAccessToken.NotFoundError(JSON.stringify(e));
-      } else if (e['type'] == 'invalid-json') {
-        throw new ZinnyAccessToken.InvalidJsonError(JSON.stringify(e));
+      e = e as Error & { type: string };
+
+      if (e.type === 'system') {
+        throw new error.ZinnyAccessToken.NotFoundError(JSON.stringify(e));
+      } else if (e.type === 'invalid-json') {
+        throw new error.ZinnyAccessToken.InvalidJsonError(JSON.stringify(e));
       } else {
-        throw new ZinnyAccessToken.UnknownError(JSON.stringify(e));
+        throw new error.ZinnyAccessToken.UnknownError(JSON.stringify(e));
       }
     }
   }

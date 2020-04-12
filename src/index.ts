@@ -10,58 +10,61 @@ export class CyUtils {
     this.logged = false;
   }
 
-  public async login() {
+  public async login(): Promise<void> {
     let appInfo: object;
     let accessToken: object;
 
     try {
       appInfo = await Kakaogames.ZinnyInfoDesk.GetAppInfo(zinnyConfig, adidInfo);
-    } catch(e) {
+    } catch (e) {
       if (e instanceof error.ZinnyInfoDesk.NotFoundError) {
-        console.log('ZinnyInfoDesk::NotFoundError', e.message);
+        console.error('ZinnyInfoDesk::NotFoundError', e.message);
       } else if (e instanceof error.ZinnyInfoDesk.InvalidJsonError) {
-        console.log('ZinnyInfoDesk::InvalidJsonError', e.message);
+        console.error('ZinnyInfoDesk::InvalidJsonError', e.message);
       } else if (e instanceof error.ZinnyInfoDesk.UnknownError) {
-        console.log('ZinnyInfoDesk::UnknownError', e.message);
+        console.error('ZinnyInfoDesk::UnknownError', e.message);
       } else {
-        console.log(e);
+        console.error(e);
       }
     }
 
     try {
       accessToken = await Kakaogames.ZinnyAccessToken.CreateWithPreviousInfo(zinnyConfig, adidInfo);
-    } catch(e) {
+    } catch (e) {
       if (e instanceof error.ZinnyAccessToken.NotFoundError) {
-        console.log('ZinnyAccessToken::NotFoundError', e.message);
+        console.error('ZinnyAccessToken::NotFoundError', e.message);
       } else if (e instanceof error.ZinnyAccessToken.InvalidJsonError) {
-        console.log('ZinnyAccessToken::InvalidJsonError', e.message);
+        console.error('ZinnyAccessToken::InvalidJsonError', e.message);
       } else if (e instanceof error.ZinnyAccessToken.UnknownError) {
-        console.log('ZinnyAccessToken::UnknownError', e.message);
+        console.error('ZinnyAccessToken::UnknownError', e.message);
       } else {
-        console.log(e);
+        console.error(e);
       }
     }
 
-    console.log(appInfo);
-    console.log(accessToken);
+    console.warn(appInfo);
+    console.warn(accessToken);
 
+    return;
     // Priconne.API.signup();
   }
 
-  public Logout() {
-
+  public async Logout(): Promise<void> {
+    // Logout
+    return;
   }
 
-  public GetClanInfo() {
+  public async GetClanInfo(): Promise<void> {
     // Priconne.API.Clan.OthersInfo();
   }
 
-  public GetProfile() {
+  public async GetProfile(): Promise<void> {
 
     // Priconne.API.Profile.GetProfile();
   }
 }
-(async () => {
+
+(async (): Promise<void> => {
   const cy = new CyUtils()
   cy.login();
 })();

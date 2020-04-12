@@ -29,10 +29,10 @@ interface Response {
       appType: string;
       appCategory: string;
       ageAuthLevel: string;
-    }
+    };
     verRecent: string;
-    appOption: any;
-    notices: any[];
+    appOption: string;
+    notices: string[];
     isWhitelist: boolean;
     svcStatus: string;
     supportedIdpCodes: string[];
@@ -54,7 +54,7 @@ interface Response {
       policyVer: string;
       publisherId: string;
       modTime: number;
-    }
+    };
     sdk: {
       heartbeatInterval: number;
       PercentOfSendingAPICallLog: number;
@@ -67,28 +67,28 @@ interface Response {
       platformVersion: number;
       sessionTimeout: number;
       snsShareGuestUrl: string;
-    }
-    onlineNotifications: any[];
+    };
+    onlineNotifications: string[];
     timestamp: number;
-  }
+  };
 }
 
 interface Headers {
   'User-Agent': string;
 }
 
-function makeQueryString(endPoint: string, params: object) {
+function makeQueryString(endPoint: string, params: object): string {
   const queryString = Object.entries(params).map(([k, v]) => k + '=' + v).join('&');
   return queryString ? endPoint + '?' + queryString : endPoint;
 }
 
-function makeHeaders(obj: { [name: string]: any }): Headers {
+function makeHeaders(obj: { [name: string]: string }): Headers {
   return {
     'User-Agent': obj['User-Agent']
   }
 }
 
-function makeRequest(obj: { [name: string]: any }): Request {
+function makeRequest(obj: { [name: string]: string }): Request {
   return {
     appId: obj.appId,
     appVer: obj.appVer,
@@ -104,32 +104,31 @@ function makeRequest(obj: { [name: string]: any }): Request {
 }
 
 async function GetAppInfo(config: Request, adidInfo: AdidInfo): Promise<Response> {
-  const ZinnyError = error.ZinnyError;
-  const ZinnyInfoDesk = error.ZinnyInfoDesk;
-
-  const url = makeQueryString(EndPoint.InfoDesk_App, makeRequest(Object.assign(config, adidInfo)));
-  const headers = makeHeaders(Object.assign(config));
+  const url = makeQueryString(EndPoint.InfoDeskApp, makeRequest({ ...config, ...adidInfo }));
+  const headers = makeHeaders({ ...config });
 
   try {
     const resp = await fetch(url, { headers });
     const json = await resp.json();
 
     if (json.status !== 200) {
-      throw new ZinnyInfoDesk.UnknownError(JSON.stringify(json));
+      throw new error.ZinnyInfoDesk.UnknownError(JSON.stringify(json));
     }
 
     return json;
-  } catch(e) {
-    if (e instanceof ZinnyError) {
+  } catch (e) {
+    if (e instanceof error.ZinnyError) {
       throw e;
     }
     if (e instanceof Error) {
-      if (e['type'] == 'system') {
-        throw new ZinnyInfoDesk.NotFoundError(JSON.stringify(e));
-      } else if (e['type'] == 'invalid-json') {
-        throw new ZinnyInfoDesk.InvalidJsonError(JSON.stringify(e));
+      e = e as Error & { type: string };
+
+      if (e.type === 'system') {
+        throw new error.ZinnyInfoDesk.NotFoundError(JSON.stringify(e));
+      } else if (e.type === 'invalid-json') {
+        throw new error.ZinnyInfoDesk.InvalidJsonError(JSON.stringify(e));
       } else {
-        throw new ZinnyInfoDesk.UnknownError(JSON.stringify(e));
+        throw new error.ZinnyInfoDesk.UnknownError(JSON.stringify(e));
       }
     }
   }
