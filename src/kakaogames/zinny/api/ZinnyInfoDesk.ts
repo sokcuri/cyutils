@@ -104,7 +104,7 @@ function makeRequest(obj: { [name: string]: string }): Request {
 }
 
 async function GetAppInfo(config: Request, adidInfo: AdidInfo): Promise<Response> {
-  const url = makeQueryString(EndPoint.InfoDeskApp, makeRequest({ ...config, ...adidInfo }));
+  const url = makeQueryString(EndPoint.InfoDesk_App, makeRequest({ ...config, ...adidInfo }));
   const headers = makeHeaders({ ...config });
 
   try {

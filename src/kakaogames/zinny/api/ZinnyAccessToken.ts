@@ -52,7 +52,7 @@ function makeHeaders(obj: { [name: string]: string }): Headers {
 }
 
 async function CreateWithPreviousInfo(config: Request, adidInfo: AdidInfo): Promise<Response> {
-  const url = EndPoint.AccessTokenCreateWithPreviousInfo;
+  const url = EndPoint.AccessToken_CreateWithPreviousInfo;
 
   const body = makeRequest({ ...config, ...adidInfo });
   const headers = makeHeaders({ ...config, 'Content-Type': 'application/json;charset=UTF-8' });
