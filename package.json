@@ -1,0 +1,42 @@
+{
+    "name": "cyutils",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "author": "sokcuri",
+    "license": "ISC",
+    "scripts": {
+        "start": "ts-node src/index.ts",
+        "build": "tsc",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "lint": "tslint -p tsconfig.json"
+    },
+    "peerDependencies": {
+        "discord.js": "^11.5.1",
+        "fast-glob": "^3.2.2",
+        "globby": "^11.0.0",
+        "ts-node": "^8.6.2",
+        "typescript": "^3.8.2"
+    },
+    "dependencies": {
+        "discord.js": "^11.5.1",
+        "fast-glob": "^3.2.2",
+        "globby": "^11.0.0",
+        "node-fetch": "^2.6.0",
+        "ts-node": "^8.6.2",
+        "typescript": "^3.8.2"
+    },
+    "devDependencies": {
+        "@types/node": "^13.7.4",
+        "@types/tape": "^4.2.34",
+        "prettier": "^2.0.4",
+        "tape": "^4.13.0",
+        "tslint": "^6.1.1",
+        "tslint-config-prettier": "^1.18.0"
+    },
+    "files": [
+        "/*.d.ts",
+        "/*.js"
+    ]
+}
