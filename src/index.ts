@@ -1,6 +1,4 @@
 import * as Kakaogames from './kakaogames';
-import zinnyConfig from './config/zinny.json';
-import adidInfo from './config/adid.json';
 import { ZinnyNotFoundError, ZinnyInvalidJsonError, ZinnyUnknownError } from './kakaogames/zinny/error';
 
 export class CyUtils {
