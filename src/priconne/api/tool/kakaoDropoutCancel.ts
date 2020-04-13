@@ -9,14 +9,6 @@ import Host from '../../Host';
 import pcrConfig from '../../../config/pcr.json';
 
 interface Request {
-  carrier: string;
-  agreement_ver: number;
-  policy_ver: number;
-  zat: string;
-  app_type: number;
-  campaign_data: string;
-  campaign_sign: string;
-  campaign_user: number;
   viewer_id: string;
   kakao_player_id: string;
 }
@@ -33,40 +25,21 @@ interface Response {
   };
 }
 
-interface Headers {
-  UDID?: string;
-}
-
 function makeRequest(obj: { [name: string]: string | number }): Request {
   return {
-    carrier: obj.carrier as string,
-    agreement_ver: 0,
-    policy_ver: 0,
-    zat: obj.zat as string,
-    app_type: 0,
-    campaign_data: '',
-    campaign_sign: '',
-    campaign_user: 0,
-    viewer_id: '0',
+    viewer_id: obj.viewerId as string,
     kakao_player_id: obj.playerId as string,
   }
 }
 
-function makeHeaders(obj: { [name: string]: string }): Headers {
-  return {
-    UDID: obj.UDID
-  }
-}
+export type KakaoDropoutCancelResp = Response & ApiResponseBase;
 
-export type Signup2Resp = Response & ApiResponseBase;
+export async function KakaoDropoutCancel(auth: Auth): Promise<KakaoDropoutCancelResp> {
+  const { viewerId, playerId } = auth;
+  const url = Host.Live + EndPoint.Tool_KakaoDropoutCancel;
+  const request = makeRequest({ ...pcrConfig, viewerId, playerId });
 
-export async function Signup2(auth: Auth): Promise<Signup2Resp> {
-  const { playerId, zat, randUUID } = auth;
-  const url = Host.Live + EndPoint.Tool_Signup2;
-  const request = makeRequest({ ...pcrConfig, playerId, zat });
-  const headers = makeHeaders({ UDID: randUUID });
-
-  const response = await ApiService.Post<Request, Response, Headers>(url, request, headers, auth);
+  const response = await ApiService.Post<Request, Response, {}>(url, request, {}, auth);
 
   if (response.data.isSuccess === 'zatfalse') {
     throw new PcrZatFailedError(JSON.stringify(response));
@@ -77,8 +50,6 @@ export async function Signup2(auth: Auth): Promise<Signup2Resp> {
   }
 
   auth.UpdateSID(response.data_headers.sid);
-  auth.UpdateViewerID(response.data.now_viewer_id.toString());
-  auth.UpdateShortUDID(response.data_headers.short_udid);
 
   return response;
 }

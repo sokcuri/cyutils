@@ -1,1 +1,1 @@
-export * from './kakaogames/zinny/error';
+export * from './kakaogames/zinny/Error';

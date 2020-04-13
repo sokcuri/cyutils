@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/camelcase */
 import * as Kakaogames from './kakaogames';
 import * as Priconne from './priconne';
 import Auth from './priconne/Auth';
 
-export enum LoginCode {
+export enum ErrorCode {
   Success,
   ZinnyInfoDesk_StatusNotOK,
   ZinnyInfoDesk_AppVerStatus_NeedUpdate,
@@ -20,6 +21,25 @@ export enum LoginCode {
   ZinnySession_SetPlayerAgreement_UnknownError,
   ZinnySession_GetLocalPlayer_MismatchCommandError,
   ZinnySession_GetLocalPlayer_UnknownError,
+  Priconne_Tool_Signup2_NotFoundError,
+  Priconne_Tool_Signup2_ResultNotOK,
+  Priconne_Tool_Signup2_ZatFailedError,
+  Priconne_Tool_Signup2_UnknownError,
+  Priconne_Tool_Signup2_InvalidJsonError,
+  Priconne_Tool_KakaoDropoutCancel_NotFoundError,
+  Priconne_Tool_KakaoDropoutCancel_ResultNotOK,
+  Priconne_Tool_KakaoDropoutCancel_ZatFalseError,
+  Priconne_Tool_KakaoDropoutCancel_InvalidJsonError,
+  Priconne_Tool_KakaoDropoutCancel_UnknownError,
+  Priconne_Tool_KakaoDropoutCancel_ZatFailedError,
+  Priconne_Load_Index_NotFoundError,
+  Priconne_Load_Index_InvalidJsonError,
+  Priconne_Load_Index_ResultNotOK,
+  Priconne_Load_Index_UnknownError,
+  Priconne_Home_Index_NotFoundError,
+  Priconne_Home_Index_InvalidJsonError,
+  Priconne_Home_Index_ResultNotOK,
+  Priconne_Home_Index_UnknownError
 }
 
 export class CyUtils {
@@ -34,7 +54,7 @@ export class CyUtils {
     this.whiteKey = whiteKey;
   }
 
-  public async login(): Promise<LoginCode> {
+  public async login() {
     const { deviceId, whiteKey } = this;
 
     let accessToken: string;
@@ -45,21 +65,21 @@ export class CyUtils {
     try {
       const appInfo = await Kakaogames.ZinnyInfoDesk.GetAppInfo(deviceId, whiteKey);
       if (appInfo.status !== 200) {
-        return LoginCode.ZinnyInfoDesk_StatusNotOK;
+        return ErrorCode.ZinnyInfoDesk_StatusNotOK;
       }
       if (appInfo.content.appVerStatus !== 'noNeedToUpdate') {
-        return LoginCode.ZinnyInfoDesk_AppVerStatus_NeedUpdate;
+        return ErrorCode.ZinnyInfoDesk_AppVerStatus_NeedUpdate;
       }
       if (appInfo.content.svcStatus !== 'open') {
-        return LoginCode.ZinnyInfoDesk_ServiceNotOpened;
+        return ErrorCode.ZinnyInfoDesk_ServiceNotOpened;
       }
     } catch (e) {
       if (e instanceof Kakaogames.ZinnyNotFoundError) {
-        return LoginCode.ZinnyInfoDesk_NotFoundError;
+        return ErrorCode.ZinnyInfoDesk_NotFoundError;
       } else if (e instanceof Kakaogames.ZinnyInvalidJsonError) {
-        return LoginCode.ZinnyInfoDesk_InvalidJsonError;
+        return ErrorCode.ZinnyInfoDesk_InvalidJsonError;
       } else if (e instanceof Kakaogames.ZinnyUnknownError) {
-        return LoginCode.ZinnyInfoDesk_UnknownError;
+        return ErrorCode.ZinnyInfoDesk_UnknownError;
       }
     }
 
@@ -68,11 +88,11 @@ export class CyUtils {
       accessToken = tokenInfo.accessToken;
     } catch (e) {
       if (e instanceof Kakaogames.ZinnyNotFoundError) {
-        return LoginCode.ZinnyAccessToken_NotFoundError;
+        return ErrorCode.ZinnyAccessToken_NotFoundError;
       } else if (e instanceof Kakaogames.ZinnyInvalidJsonError) {
-        return LoginCode.ZinnyAccessToken_InvalidJsonError;
+        return ErrorCode.ZinnyAccessToken_InvalidJsonError;
       } else if (e instanceof Kakaogames.ZinnyUnknownError) {
-        return LoginCode.ZinnyAccessToken_UnknownError;
+        return ErrorCode.ZinnyAccessToken_UnknownError;
       }
     }
 
@@ -85,9 +105,9 @@ export class CyUtils {
       zatExpiryTime = loginRes[2].content.zatExpiryTime;
     } catch (e) {
       if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
-        return LoginCode.ZinnySession_Login_MismatchCommandError;
+        return ErrorCode.ZinnySession_Login_MismatchCommandError;
       } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
-        return LoginCode.ZinnySession_Login_UnknownError;
+        return ErrorCode.ZinnySession_Login_UnknownError;
       }
     }
 
@@ -95,9 +115,9 @@ export class CyUtils {
       await session.setPlayerAgreement(playerId);
     } catch (e) {
       if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
-        return LoginCode.ZinnySession_SetPlayerAgreement_MismatchCommandError;
+        return ErrorCode.ZinnySession_SetPlayerAgreement_MismatchCommandError;
       } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
-        return LoginCode.ZinnySession_SetPlayerAgreement_UnknownError;
+        return ErrorCode.ZinnySession_SetPlayerAgreement_UnknownError;
       }
     }
 
@@ -105,9 +125,9 @@ export class CyUtils {
       await session.getLocalPlayer(playerId);
     } catch (e) {
       if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
-        return LoginCode.ZinnySession_GetLocalPlayer_MismatchCommandError;
+        return ErrorCode.ZinnySession_GetLocalPlayer_MismatchCommandError;
       } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
-        return LoginCode.ZinnySession_GetLocalPlayer_UnknownError;
+        return ErrorCode.ZinnySession_GetLocalPlayer_UnknownError;
       }
     }
 
@@ -115,28 +135,68 @@ export class CyUtils {
 
     this.auth = new Auth(this.deviceId, playerId, zatExpiryTime, zat);
 
-    console.log(this.auth);
-
     try {
-      const signup = await Priconne.Tool.Signup2(this.auth);
-      console.log(signup);
-
+      await Priconne.Tool.Signup2(this.auth);
     } catch (e) {
-
+      if (e instanceof Priconne.PcrNotFoundError) {
+        return ErrorCode.Priconne_Tool_Signup2_NotFoundError;
+      } else if (e instanceof Priconne.PcrInvalidJsonError) {
+        return ErrorCode.Priconne_Tool_Signup2_InvalidJsonError;
+      } else if (e instanceof Priconne.PcrResultNotOkError) {
+        return ErrorCode.Priconne_Tool_Signup2_ResultNotOK;
+      } else if (e instanceof Priconne.PcrZatFailedError) {
+        return ErrorCode.Priconne_Tool_Signup2_ZatFailedError;
+      } else {
+        return ErrorCode.Priconne_Tool_Signup2_UnknownError;
+      }
     }
 
-    console.log(this.auth);
-    // await Priconne.Tool.KakaoDropoutCancel();
+    try {
+      await Priconne.Tool.KakaoDropoutCancel(this.auth);
+    } catch (e) {
+      if (e instanceof Priconne.PcrNotFoundError) {
+        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_NotFoundError;
+      } else if (e instanceof Priconne.PcrInvalidJsonError) {
+        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_InvalidJsonError;
+      } else if (e instanceof Priconne.PcrResultNotOkError) {
+        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_ResultNotOK;
+      } else if (e instanceof Priconne.PcrZatFailedError) {
+        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_ZatFailedError;
+      } else {
+        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_UnknownError;
+      }
+    }
 
-    // await Priconne.Load.Index();
+    try {
+      await Priconne.Load.Index(this.auth);
+    } catch (e) {
+      if (e instanceof Priconne.PcrNotFoundError) {
+        return ErrorCode.Priconne_Load_Index_NotFoundError;
+      } else if (e instanceof Priconne.PcrInvalidJsonError) {
+        return ErrorCode.Priconne_Load_Index_InvalidJsonError;
+      } else if (e instanceof Priconne.PcrResultNotOkError) {
+        return ErrorCode.Priconne_Load_Index_ResultNotOK;
+      } else {
+        return ErrorCode.Priconne_Load_Index_UnknownError;
+      }
+    }
 
-    // await Priconne.Home.Index();
-
-//    const api = new Priconne.ApiService();
-//    api.get(Priconne.Tool.SignUp2, )
+    try {
+      await Priconne.Home.Index(this.auth);
+    } catch (e) {
+      if (e instanceof Priconne.PcrNotFoundError) {
+        return ErrorCode.Priconne_Home_Index_NotFoundError;
+      } else if (e instanceof Priconne.PcrInvalidJsonError) {
+        return ErrorCode.Priconne_Home_Index_InvalidJsonError;
+      } else if (e instanceof Priconne.PcrResultNotOkError) {
+        return ErrorCode.Priconne_Home_Index_ResultNotOK;
+      } else {
+        return ErrorCode.Priconne_Home_Index_UnknownError;
+      }
+    }
 
     this.logged = true;
-    return LoginCode.Success;
+    return ErrorCode.Success;
   }
 
   public async logout(): Promise<void> {
@@ -144,14 +204,11 @@ export class CyUtils {
     return;
   }
 
-  public async getClanInfo(): Promise<void> {
-    // Priconne.API.Clan.OthersInfo();
+  public async getClanInfo(clanId: number) {
+    return await Priconne.Clan.OthersInfo(this.auth, clanId);
   }
 
-  public async getProfile(): Promise<void> {
-
-    // Priconne.API.Profile.GetProfile();
+  public async getProfile(targetId: number) {
+    return await Priconne.Profile.GetProfile(this.auth, targetId);
   }
 }
-
-export default CyUtils;

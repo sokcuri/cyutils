@@ -20,6 +20,18 @@ export class PcrInvalidJsonError extends PcrError {
   }
 }
 
+export class PcrZatFailedError extends PcrError {
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
+export class PcrResultNotOkError extends PcrError {
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
 export class PcrUnknownError extends PcrError {
   constructor(message?: string) {
     super(message);
