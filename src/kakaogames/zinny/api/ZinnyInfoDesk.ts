@@ -105,7 +105,7 @@ async function GetAppInfo(): Promise<Response> {
 
   const response = await ApiService.Get<Request, Response, Headers>(url, request, headers);
 
-  if (response.status !== 200) {
+  if (!response.status) {
     throw new ZinnyUnknownError(JSON.stringify(response));
   }
   return response;
