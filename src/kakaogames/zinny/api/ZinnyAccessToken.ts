@@ -1,8 +1,7 @@
-import EndPoint from '../endpoint';
+import EndPoint from '../EndPoint';
 import zinnyConfig from '../../../config/zinny.json';
-import adidInfo from '../../../config/adid.json';
-import { ApiService } from '../apiservice';
-import { ZinnyUnknownError } from '../error';
+import { ApiService } from '../ApiService';
+import { ZinnyUnknownError } from '../Error';
 
 interface Request {
   appVer: string;
@@ -34,9 +33,9 @@ function makeRequest(obj: { [name: string]: string }): Request {
     sdkVer: obj.sdkVer,
     os: obj.os,
     market: obj.market,
-    deviceId: obj.udid,
+    deviceId: obj.deviceId,
     serialNo: obj.os,
-    previousDeviceId: obj.udid,
+    previousDeviceId: obj.deviceId,
     previousSerialNo: obj.os
   }
 }
@@ -51,9 +50,9 @@ function makeHeaders(obj: { [name: string]: string }): Headers {
   }
 }
 
-async function CreateWithPreviousInfo(): Promise<Response> {
+async function CreateWithPreviousInfo(deviceId: string): Promise<Response> {
   const url = EndPoint.AccessToken_CreateWithPreviousInfo;
-  const request = makeRequest({ ...zinnyConfig, ...adidInfo });
+  const request = makeRequest({ ...zinnyConfig, deviceId });
   const headers = makeHeaders({ ...zinnyConfig, 'Content-Type': 'application/json;charset=UTF-8' });
 
   const response = await ApiService.Post<Request, Response, Headers>(url, request, headers);

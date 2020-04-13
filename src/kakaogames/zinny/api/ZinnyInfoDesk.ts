@@ -1,8 +1,7 @@
-import EndPoint from '../endpoint';
+import EndPoint from '../EndPoint';
 import zinnyConfig from '../../../config/zinny.json';
-import adidInfo from '../../../config/adid.json';
-import { ApiService } from '../apiservice';
-import { ZinnyUnknownError } from '../error';
+import { ApiService } from '../ApiService';
+import { ZinnyUnknownError } from '../Error';
 
 interface Request {
   appId: string;
@@ -98,9 +97,9 @@ function makeHeaders(obj: { [name: string]: string }): Headers {
   }
 }
 
-async function GetAppInfo(): Promise<Response> {
+async function GetAppInfo(deviceId: string, whiteKey: string): Promise<Response> {
   const url = EndPoint.InfoDesk_App;
-  const request = makeRequest({ ...zinnyConfig, ...adidInfo });
+  const request = makeRequest({ ...zinnyConfig, deviceId, whiteKey });
   const headers = makeHeaders({ ...zinnyConfig });
 
   const response = await ApiService.Get<Request, Response, Headers>(url, request, headers);

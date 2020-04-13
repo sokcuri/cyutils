@@ -1,12 +1,11 @@
 import {
   ZinnySessionUnknownError,
   ZinnySessionMismatchCommand
-} from './error';
+} from './Error';
 
 import zinnyConfig from '../../config/zinny.json';
-import adidInfo from '../../config/adid.json';
 
-import Base64 from './base64';
+import Base64 from './Base64';
 import websocket from 'ws';
 
 import util from 'util';
@@ -168,11 +167,11 @@ function makeLoginRequest(obj: StringMap): LoginRequest {
     os: obj.os,
     osVer: obj.osVer,
     network: obj.network,
-    deviceId: obj.udid,
+    deviceId: obj.deviceId,
     clientTime: Date.now(),
     timezoneOffset: -18000000,
     adid: obj.adid,
-    whiteKey: obj.adid,
+    whiteKey: obj.whiteKey,
     gsiToken: true,
     serialNo: obj.os,
     referrer: 'utm_source=google-play&utm_medium=organic'
@@ -240,15 +239,10 @@ function wrapRequest(command: string, request: object): SessionStruct {
 
 export class SessionService {
   private ws: websocket;
-  private accessToken: string;
 
-  constructor(accessToken: string) {
-    this.accessToken = accessToken;
-  }
-
-  public async login(): Promise<LoginResponse> {
+  public async login(accessToken: string, deviceId: string, whiteKey: string): Promise<LoginResponse> {
     const command = 'auth://v3/auth/loginZinnyDevice3';
-    const request = makeLoginRequest({ ...zinnyConfig, ...adidInfo, accessToken: this.accessToken });
+    const request = makeLoginRequest({ ...zinnyConfig, deviceId, whiteKey, accessToken });
     const wrapped = wrapRequest(command, request);
     const deflated = zlib.deflateSync(JSON.stringify(wrapped))
     const encoded = Base64.UrlSafeEncode(deflated);

@@ -4,7 +4,7 @@ import {
   ZinnyUnknownError,
   ZinnyNotFoundError,
   ZinnyInvalidJsonError
-} from './error';
+} from './Error';
 
 export class ApiService {
   private static makeQueryString(endPoint: string, params: object): string {
