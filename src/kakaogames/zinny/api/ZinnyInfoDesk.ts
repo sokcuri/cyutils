@@ -1,8 +1,8 @@
-import * as error from '../error';
-
-import fetch from 'node-fetch';
 import EndPoint from '../endpoint';
-import AdidInfo from '../adidinfo';
+import zinnyConfig from '../../../config/zinny.json';
+import adidInfo from '../../../config/adid.json';
+import { ApiService } from '../apiservice';
+import { ZinnyUnknownError } from '../error';
 
 interface Request {
   appId: string;
@@ -77,17 +77,6 @@ interface Headers {
   'User-Agent': string;
 }
 
-function makeQueryString(endPoint: string, params: object): string {
-  const queryString = Object.entries(params).map(([k, v]) => k + '=' + v).join('&');
-  return queryString ? endPoint + '?' + queryString : endPoint;
-}
-
-function makeHeaders(obj: { [name: string]: string }): Headers {
-  return {
-    'User-Agent': obj['User-Agent']
-  }
-}
-
 function makeRequest(obj: { [name: string]: string }): Request {
   return {
     appId: obj.appId,
@@ -103,35 +92,23 @@ function makeRequest(obj: { [name: string]: string }): Request {
   }
 }
 
-async function GetAppInfo(config: Request, adidInfo: AdidInfo): Promise<Response> {
-  const url = makeQueryString(EndPoint.InfoDesk_App, makeRequest({ ...config, ...adidInfo }));
-  const headers = makeHeaders({ ...config });
-
-  try {
-    const resp = await fetch(url, { headers });
-    const json = await resp.json();
-
-    if (json.status !== 200) {
-      throw new error.ZinnyInfoDesk.UnknownError(JSON.stringify(json));
-    }
-
-    return json;
-  } catch (e) {
-    if (e instanceof error.ZinnyError) {
-      throw e;
-    }
-    if (e instanceof Error) {
-      e = e as Error & { type: string };
-
-      if (e.type === 'system') {
-        throw new error.ZinnyInfoDesk.NotFoundError(JSON.stringify(e));
-      } else if (e.type === 'invalid-json') {
-        throw new error.ZinnyInfoDesk.InvalidJsonError(JSON.stringify(e));
-      } else {
-        throw new error.ZinnyInfoDesk.UnknownError(JSON.stringify(e));
-      }
-    }
+function makeHeaders(obj: { [name: string]: string }): Headers {
+  return {
+    'User-Agent': obj['User-Agent']
   }
+}
+
+async function GetAppInfo(): Promise<Response> {
+  const url = EndPoint.InfoDesk_App;
+  const request = makeRequest({ ...zinnyConfig, ...adidInfo });
+  const headers = makeHeaders({ ...zinnyConfig });
+
+  const response = await ApiService.Get<Request, Response, Headers>(url, request, headers);
+
+  if (response.status !== 200) {
+    throw new ZinnyUnknownError(JSON.stringify(response));
+  }
+  return response;
 }
 
 export const ZinnyInfoDesk = {

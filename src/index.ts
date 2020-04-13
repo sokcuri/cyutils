@@ -1,7 +1,7 @@
 import * as Kakaogames from './kakaogames';
-import * as error from './error';
 import zinnyConfig from './config/zinny.json';
 import adidInfo from './config/adid.json';
+import { ZinnyNotFoundError, ZinnyInvalidJsonError, ZinnyUnknownError } from './kakaogames/zinny/error';
 
 export class CyUtils {
   private logged: boolean;
@@ -11,17 +11,15 @@ export class CyUtils {
   }
 
   public async login(): Promise<void> {
-    let appInfo: object;
-    let accessToken: object;
-
     try {
-      appInfo = await Kakaogames.ZinnyInfoDesk.GetAppInfo(zinnyConfig, adidInfo);
+      const appInfo = await Kakaogames.ZinnyInfoDesk.GetAppInfo();
+      console.warn(appInfo);
     } catch (e) {
-      if (e instanceof error.ZinnyInfoDesk.NotFoundError) {
+      if (e instanceof ZinnyNotFoundError) {
         console.error('ZinnyInfoDesk::NotFoundError', e.message);
-      } else if (e instanceof error.ZinnyInfoDesk.InvalidJsonError) {
+      } else if (e instanceof ZinnyInvalidJsonError) {
         console.error('ZinnyInfoDesk::InvalidJsonError', e.message);
-      } else if (e instanceof error.ZinnyInfoDesk.UnknownError) {
+      } else if (e instanceof ZinnyUnknownError) {
         console.error('ZinnyInfoDesk::UnknownError', e.message);
       } else {
         console.error(e);
@@ -29,21 +27,20 @@ export class CyUtils {
     }
 
     try {
-      accessToken = await Kakaogames.ZinnyAccessToken.CreateWithPreviousInfo(zinnyConfig, adidInfo);
+      const accessToken = await Kakaogames.ZinnyAccessToken.CreateWithPreviousInfo();
+      console.warn(accessToken);
     } catch (e) {
-      if (e instanceof error.ZinnyAccessToken.NotFoundError) {
+      if (e instanceof ZinnyNotFoundError) {
         console.error('ZinnyAccessToken::NotFoundError', e.message);
-      } else if (e instanceof error.ZinnyAccessToken.InvalidJsonError) {
+      } else if (e instanceof ZinnyInvalidJsonError) {
         console.error('ZinnyAccessToken::InvalidJsonError', e.message);
-      } else if (e instanceof error.ZinnyAccessToken.UnknownError) {
+      } else if (e instanceof ZinnyUnknownError) {
         console.error('ZinnyAccessToken::UnknownError', e.message);
       } else {
         console.error(e);
       }
     }
 
-    console.warn(appInfo);
-    console.warn(accessToken);
 
     return;
     // Priconne.API.signup();

@@ -1,8 +1,8 @@
-import * as error from '../error';
-
-import fetch from 'node-fetch';
 import EndPoint from '../endpoint';
-import AdidInfo from '../adidinfo';
+import zinnyConfig from '../../../config/zinny.json';
+import adidInfo from '../../../config/adid.json';
+import { ApiService } from '../apiservice';
+import { ZinnyUnknownError } from '../error';
 
 interface Request {
   appVer: string;
@@ -51,37 +51,17 @@ function makeHeaders(obj: { [name: string]: string }): Headers {
   }
 }
 
-async function CreateWithPreviousInfo(config: Request, adidInfo: AdidInfo): Promise<Response> {
+async function CreateWithPreviousInfo(): Promise<Response> {
   const url = EndPoint.AccessToken_CreateWithPreviousInfo;
+  const request = makeRequest({ ...zinnyConfig, ...adidInfo });
+  const headers = makeHeaders({ ...zinnyConfig, 'Content-Type': 'application/json;charset=UTF-8' });
 
-  const body = makeRequest({ ...config, ...adidInfo });
-  const headers = makeHeaders({ ...config, 'Content-Type': 'application/json;charset=UTF-8' });
+  const response = await ApiService.Post<Request, Response, Headers>(url, request, headers);
 
-  try {
-    const resp = await fetch(url, { method: 'post', body: JSON.stringify(body), headers });
-    const json = await resp.json();
-
-    if (!json.expiryTime) {
-      throw new error.ZinnyAccessToken.UnknownError(JSON.stringify(json));
-    }
-
-    return json;
-  } catch (e) {
-    if (e instanceof error.ZinnyError) {
-      throw e;
-    }
-    if (e instanceof Error) {
-      e = e as Error & { type: string };
-
-      if (e.type === 'system') {
-        throw new error.ZinnyAccessToken.NotFoundError(JSON.stringify(e));
-      } else if (e.type === 'invalid-json') {
-        throw new error.ZinnyAccessToken.InvalidJsonError(JSON.stringify(e));
-      } else {
-        throw new error.ZinnyAccessToken.UnknownError(JSON.stringify(e));
-      }
-    }
+  if (!response.expiryTime) {
+    throw new ZinnyUnknownError(JSON.stringify(response));
   }
+  return response;
 }
 
 export const ZinnyAccessToken = {
