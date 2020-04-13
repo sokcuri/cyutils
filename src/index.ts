@@ -1,14 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import {
-  ZinnyNotFoundError,
-  ZinnyInvalidJsonError,
-  ZinnyUnknownError,
-  ZinnySessionMismatchCommand,
-  ZinnySessionUnknownError
-} from './kakaogames/zinny/error';
-
 import * as Kakaogames from './kakaogames';
-import { SessionService } from './kakaogames/zinny/sessionservice';
 
 export enum ZinnyLogin {
   Success,
@@ -53,11 +44,11 @@ export class CyUtils {
         return ZinnyLogin.ZinnyInfoDesk_ServiceNotOpened;
       }
     } catch (e) {
-      if (e instanceof ZinnyNotFoundError) {
+      if (e instanceof Kakaogames.ZinnyNotFoundError) {
         return ZinnyLogin.ZinnyInfoDesk_NotFoundError;
-      } else if (e instanceof ZinnyInvalidJsonError) {
+      } else if (e instanceof Kakaogames.ZinnyInvalidJsonError) {
         return ZinnyLogin.ZinnyInfoDesk_InvalidJsonError;
-      } else if (e instanceof ZinnyUnknownError) {
+      } else if (e instanceof Kakaogames.ZinnyUnknownError) {
         return ZinnyLogin.ZinnyInfoDesk_UnknownError;
       }
     }
@@ -66,25 +57,25 @@ export class CyUtils {
       const tokenInfo = await Kakaogames.ZinnyAccessToken.CreateWithPreviousInfo();
       this.accessToken = tokenInfo.accessToken;
     } catch (e) {
-      if (e instanceof ZinnyNotFoundError) {
+      if (e instanceof Kakaogames.ZinnyNotFoundError) {
         return ZinnyLogin.ZinnyAccessToken_NotFoundError;
-      } else if (e instanceof ZinnyInvalidJsonError) {
+      } else if (e instanceof Kakaogames.ZinnyInvalidJsonError) {
         return ZinnyLogin.ZinnyAccessToken_InvalidJsonError;
-      } else if (e instanceof ZinnyUnknownError) {
+      } else if (e instanceof Kakaogames.ZinnyUnknownError) {
         return ZinnyLogin.ZinnyAccessToken_UnknownError;
       }
     }
 
-    const session = new SessionService(this.accessToken);
+    const session = new Kakaogames.SessionService(this.accessToken);
 
     try {
       const loginRes = await session.login();
       this.playerId = loginRes[2].content.player.playerId;
       this.zat = loginRes[2].content.zat;
     } catch (e) {
-      if (e instanceof ZinnySessionMismatchCommand) {
+      if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
         return ZinnyLogin.ZinnySession_Login_MismatchCommandError;
-      } else if (e instanceof ZinnySessionUnknownError) {
+      } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
         return ZinnyLogin.ZinnySession_Login_UnknownError;
       }
     }
@@ -92,9 +83,9 @@ export class CyUtils {
     try {
       await session.setPlayerAgreement(this.playerId);
     } catch (e) {
-      if (e instanceof ZinnySessionMismatchCommand) {
+      if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
         return ZinnyLogin.ZinnySession_SetPlayerAgreement_MismatchCommandError;
-      } else if (e instanceof ZinnySessionUnknownError) {
+      } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
         return ZinnyLogin.ZinnySession_SetPlayerAgreement_UnknownError;
       }
     }
@@ -102,9 +93,9 @@ export class CyUtils {
     try {
       await session.getLocalPlayer(this.playerId);
     } catch (e) {
-      if (e instanceof ZinnySessionMismatchCommand) {
+      if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
         return ZinnyLogin.ZinnySession_GetLocalPlayer_MismatchCommandError;
-      } else if (e instanceof ZinnySessionUnknownError) {
+      } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
         return ZinnyLogin.ZinnySession_GetLocalPlayer_UnknownError;
       }
     }
