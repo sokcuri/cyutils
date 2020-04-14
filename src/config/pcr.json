@@ -1,0 +1,20 @@
+{
+    "carrier": "Android",
+    "KEYCHAIN": "",
+    "BATTLE-LOGIC-VERSION": 3,
+    "REGION-CODE": "",
+    "PLATFORM": 2,
+    "IP-ADDRESS": "10.0.0.1",
+    "DEVICE-ID": "",
+    "LOCALE": "Kor",
+    "PLATFORM-OS-VERSION": "Android OS 6.0.1 / API-23 (V417IR/eng.root.20191126.082109)",
+    "X-Unity-Version": "2017.4.33f1",
+    "DEVICE-NAME": "Google Pixel XL",
+    "Content-Type": "application/x-www-form-urlencoded",
+    "GRAPHICS-DEVICE-NAME": "Adreno (TM) 512",
+    "BUNDLE-VER": "10008410",
+    "APP-VER": "2.0.11",
+    "DEVICE": 2,
+    "RES-VER": "10008410",
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 6.0.1; MuMu Build/V417IR)"
+}

@@ -1,0 +1,15 @@
+{
+    "appVer": "3.4.4",
+    "sdkVer": "3.10.3",
+    "appId": "235375",
+    "appSecret": "399512a26587f9f8fb6863f8c4626a8b",
+    "country": "kr",
+    "lang": "ko",
+    "telecom": "unknown",
+    "network": "wifi",
+    "deviceModel": "Google Pixel XL",
+    "os": "android",
+    "osVer": "6.0.1",
+    "market": "googlePlay",
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 6.0.1; MuMu Build/V417IR)"
+}
