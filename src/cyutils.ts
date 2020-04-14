@@ -4,7 +4,7 @@ import * as Kakaogames from './kakaogames';
 import * as Priconne from './priconne';
 import Auth from './priconne/Auth';
 
-export enum ErrorCode {
+export enum CyUtilsErrorCode {
   Success,
   ZinnyInfoDesk_StatusNotOK,
   ZinnyInfoDesk_AppVerStatus_NeedUpdate,
@@ -42,6 +42,17 @@ export enum ErrorCode {
   Priconne_Home_Index_UnknownError
 }
 
+export interface CyUtilsPcrError {
+  data_headers: {};
+  data: {
+    server_error: {
+      status: number;
+      title: string;
+      message: string;
+    };
+  };
+}
+
 export class CyUtils {
   private logged: boolean;
   private auth: Auth;
@@ -65,21 +76,21 @@ export class CyUtils {
     try {
       const appInfo = await Kakaogames.ZinnyInfoDesk.GetAppInfo(deviceId, whiteKey);
       if (appInfo.status !== 200) {
-        return ErrorCode.ZinnyInfoDesk_StatusNotOK;
+        return CyUtilsErrorCode.ZinnyInfoDesk_StatusNotOK;
       }
       if (appInfo.content.appVerStatus !== 'noNeedToUpdate') {
-        return ErrorCode.ZinnyInfoDesk_AppVerStatus_NeedUpdate;
+        return CyUtilsErrorCode.ZinnyInfoDesk_AppVerStatus_NeedUpdate;
       }
       if (appInfo.content.svcStatus !== 'open') {
-        return ErrorCode.ZinnyInfoDesk_ServiceNotOpened;
+        return CyUtilsErrorCode.ZinnyInfoDesk_ServiceNotOpened;
       }
     } catch (e) {
       if (e instanceof Kakaogames.ZinnyNotFoundError) {
-        return ErrorCode.ZinnyInfoDesk_NotFoundError;
+        return CyUtilsErrorCode.ZinnyInfoDesk_NotFoundError;
       } else if (e instanceof Kakaogames.ZinnyInvalidJsonError) {
-        return ErrorCode.ZinnyInfoDesk_InvalidJsonError;
+        return CyUtilsErrorCode.ZinnyInfoDesk_InvalidJsonError;
       } else if (e instanceof Kakaogames.ZinnyUnknownError) {
-        return ErrorCode.ZinnyInfoDesk_UnknownError;
+        return CyUtilsErrorCode.ZinnyInfoDesk_UnknownError;
       }
     }
 
@@ -88,11 +99,11 @@ export class CyUtils {
       accessToken = tokenInfo.accessToken;
     } catch (e) {
       if (e instanceof Kakaogames.ZinnyNotFoundError) {
-        return ErrorCode.ZinnyAccessToken_NotFoundError;
+        return CyUtilsErrorCode.ZinnyAccessToken_NotFoundError;
       } else if (e instanceof Kakaogames.ZinnyInvalidJsonError) {
-        return ErrorCode.ZinnyAccessToken_InvalidJsonError;
+        return CyUtilsErrorCode.ZinnyAccessToken_InvalidJsonError;
       } else if (e instanceof Kakaogames.ZinnyUnknownError) {
-        return ErrorCode.ZinnyAccessToken_UnknownError;
+        return CyUtilsErrorCode.ZinnyAccessToken_UnknownError;
       }
     }
 
@@ -105,9 +116,9 @@ export class CyUtils {
       zatExpiryTime = loginRes[2].content.zatExpiryTime;
     } catch (e) {
       if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
-        return ErrorCode.ZinnySession_Login_MismatchCommandError;
+        return CyUtilsErrorCode.ZinnySession_Login_MismatchCommandError;
       } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
-        return ErrorCode.ZinnySession_Login_UnknownError;
+        return CyUtilsErrorCode.ZinnySession_Login_UnknownError;
       }
     }
 
@@ -115,9 +126,9 @@ export class CyUtils {
       await session.setPlayerAgreement(playerId);
     } catch (e) {
       if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
-        return ErrorCode.ZinnySession_SetPlayerAgreement_MismatchCommandError;
+        return CyUtilsErrorCode.ZinnySession_SetPlayerAgreement_MismatchCommandError;
       } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
-        return ErrorCode.ZinnySession_SetPlayerAgreement_UnknownError;
+        return CyUtilsErrorCode.ZinnySession_SetPlayerAgreement_UnknownError;
       }
     }
 
@@ -125,9 +136,9 @@ export class CyUtils {
       await session.getLocalPlayer(playerId);
     } catch (e) {
       if (e instanceof Kakaogames.ZinnySessionMismatchCommand) {
-        return ErrorCode.ZinnySession_GetLocalPlayer_MismatchCommandError;
+        return CyUtilsErrorCode.ZinnySession_GetLocalPlayer_MismatchCommandError;
       } else if (e instanceof Kakaogames.ZinnySessionUnknownError) {
-        return ErrorCode.ZinnySession_GetLocalPlayer_UnknownError;
+        return CyUtilsErrorCode.ZinnySession_GetLocalPlayer_UnknownError;
       }
     }
 
@@ -139,15 +150,15 @@ export class CyUtils {
       await Priconne.Tool.Signup2(this.auth);
     } catch (e) {
       if (e instanceof Priconne.PcrNotFoundError) {
-        return ErrorCode.Priconne_Tool_Signup2_NotFoundError;
+        return CyUtilsErrorCode.Priconne_Tool_Signup2_NotFoundError;
       } else if (e instanceof Priconne.PcrInvalidJsonError) {
-        return ErrorCode.Priconne_Tool_Signup2_InvalidJsonError;
+        return CyUtilsErrorCode.Priconne_Tool_Signup2_InvalidJsonError;
       } else if (e instanceof Priconne.PcrResultNotOkError) {
-        return ErrorCode.Priconne_Tool_Signup2_ResultNotOK;
+        return CyUtilsErrorCode.Priconne_Tool_Signup2_ResultNotOK;
       } else if (e instanceof Priconne.PcrZatFailedError) {
-        return ErrorCode.Priconne_Tool_Signup2_ZatFailedError;
+        return CyUtilsErrorCode.Priconne_Tool_Signup2_ZatFailedError;
       } else {
-        return ErrorCode.Priconne_Tool_Signup2_UnknownError;
+        return CyUtilsErrorCode.Priconne_Tool_Signup2_UnknownError;
       }
     }
 
@@ -155,15 +166,15 @@ export class CyUtils {
       await Priconne.Tool.KakaoDropoutCancel(this.auth);
     } catch (e) {
       if (e instanceof Priconne.PcrNotFoundError) {
-        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_NotFoundError;
+        return CyUtilsErrorCode.Priconne_Tool_KakaoDropoutCancel_NotFoundError;
       } else if (e instanceof Priconne.PcrInvalidJsonError) {
-        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_InvalidJsonError;
+        return CyUtilsErrorCode.Priconne_Tool_KakaoDropoutCancel_InvalidJsonError;
       } else if (e instanceof Priconne.PcrResultNotOkError) {
-        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_ResultNotOK;
+        return CyUtilsErrorCode.Priconne_Tool_KakaoDropoutCancel_ResultNotOK;
       } else if (e instanceof Priconne.PcrZatFailedError) {
-        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_ZatFailedError;
+        return CyUtilsErrorCode.Priconne_Tool_KakaoDropoutCancel_ZatFailedError;
       } else {
-        return ErrorCode.Priconne_Tool_KakaoDropoutCancel_UnknownError;
+        return CyUtilsErrorCode.Priconne_Tool_KakaoDropoutCancel_UnknownError;
       }
     }
 
@@ -171,13 +182,13 @@ export class CyUtils {
       await Priconne.Load.Index(this.auth);
     } catch (e) {
       if (e instanceof Priconne.PcrNotFoundError) {
-        return ErrorCode.Priconne_Load_Index_NotFoundError;
+        return CyUtilsErrorCode.Priconne_Load_Index_NotFoundError;
       } else if (e instanceof Priconne.PcrInvalidJsonError) {
-        return ErrorCode.Priconne_Load_Index_InvalidJsonError;
+        return CyUtilsErrorCode.Priconne_Load_Index_InvalidJsonError;
       } else if (e instanceof Priconne.PcrResultNotOkError) {
-        return ErrorCode.Priconne_Load_Index_ResultNotOK;
+        return CyUtilsErrorCode.Priconne_Load_Index_ResultNotOK;
       } else {
-        return ErrorCode.Priconne_Load_Index_UnknownError;
+        return CyUtilsErrorCode.Priconne_Load_Index_UnknownError;
       }
     }
 
@@ -185,18 +196,18 @@ export class CyUtils {
       await Priconne.Home.Index(this.auth);
     } catch (e) {
       if (e instanceof Priconne.PcrNotFoundError) {
-        return ErrorCode.Priconne_Home_Index_NotFoundError;
+        return CyUtilsErrorCode.Priconne_Home_Index_NotFoundError;
       } else if (e instanceof Priconne.PcrInvalidJsonError) {
-        return ErrorCode.Priconne_Home_Index_InvalidJsonError;
+        return CyUtilsErrorCode.Priconne_Home_Index_InvalidJsonError;
       } else if (e instanceof Priconne.PcrResultNotOkError) {
-        return ErrorCode.Priconne_Home_Index_ResultNotOK;
+        return CyUtilsErrorCode.Priconne_Home_Index_ResultNotOK;
       } else {
-        return ErrorCode.Priconne_Home_Index_UnknownError;
+        return CyUtilsErrorCode.Priconne_Home_Index_UnknownError;
       }
     }
 
     this.logged = true;
-    return ErrorCode.Success;
+    return CyUtilsErrorCode.Success;
   }
 
   public async logout(): Promise<void> {
