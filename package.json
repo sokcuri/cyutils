@@ -1,31 +1,28 @@
 {
     "name": "cyutils",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "",
-    "main": "index.js",
-    "types": "index.d.ts",
+    "main": "src/cyutils.js",
+    "types": "src/cyutils.d.ts",
     "author": "sokcuri",
     "license": "ISC",
     "scripts": {
         "prebuild": "npm run lint",
-        "clean": "ts-node script/Clean.ts",
-        "build": "webpack --mode=production",
-        "watch": "webpack --mode=development --watch",
-        "prebuildpackage": "npm run clean && npm run build && ts-node script/SetupPackage.ts",
+        "clean": "rimraf dist",
+        "build": "tsc",
+        "prebuildpackage": "npm run clean && npm run build && ts-node scripts/SetupPackage.ts",
         "buildpackage": "cd dist && npm pack",
         "lint": "eslint . --ext ts"
-    },
-    "peerDependencies": {
-        "node-fetch": "^2.6.0",
-        "ts-node": "^8.6.2",
-        "typescript": "^3.8.2"
     },
     "dependencies": {
         "node-fetch": "^2.6.0",
         "ts-node": "^8.6.2",
         "webpack": "^4.42.1",
         "ws": "^7.2.3",
-        "zlib": "^1.0.5"
+        "uuid": "^7.0.3",
+        "zlib": "^1.0.5",
+        "fs-extra": "^9.0.0",
+        "typescript": "^3.8.3"
     },
     "devDependencies": {
         "@types/fs-extra": "^8.1.0",
@@ -36,18 +33,12 @@
         "@types/ws": "^7.2.3",
         "@typescript-eslint/eslint-plugin": "^2.27.0",
         "@typescript-eslint/parser": "^2.27.0",
-        "bufferutil": "^4.0.1",
         "eslint": "^6.8.0",
-        "fs-extra": "^9.0.0",
+        "bufferutil": "^4.0.1",
         "tape": "^4.13.0",
-        "ts-loader": "^6.2.2",
-        "typescript": "^3.8.3",
-        "utf-8-validate": "^5.0.2",
-        "uuid": "^7.0.3",
-        "webpack-cli": "^3.3.11"
+        "utf-8-validate": "^5.0.2"
     },
     "files": [
-        "/*.d.ts",
-        "/*.js"
+        "/src"
     ]
 }
