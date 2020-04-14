@@ -1,14 +1,16 @@
 {
     "compilerOptions": {
-      "lib": ["es2020", "dom"],
+      "lib": ["es5"],
       "module": "commonjs",
-      "target": "es2019",
+      "target": "es5",
       "declaration": true,
       "esModuleInterop": true,
       "resolveJsonModule": true,
-      "outDir": ".",
+      "noImplicitAny": true,
+      "sourceMap": true,
+      "outDir": "./dist/",
     },
-    "include": ["src"],
+    "include": ["src", "script"],
     "exclude": ["node_modules"]
   }
   

@@ -81,9 +81,9 @@ export class ApiService {
     return await this.Fetch(url, { method: 'POST', body: JSON.stringify(req), headers });
   }
 
-  public static async Fetch<TResp>(...args: unknown[]): Promise<TResp & ApiResponseBase> {
+  public static async Fetch<TResp>(url: string, obj: object): Promise<TResp & ApiResponseBase> {
     try {
-      const resp = await fetch(...args);
+      const resp = await fetch(url, obj);
       const json = await resp.json();
       return json;
     } catch (e) {
