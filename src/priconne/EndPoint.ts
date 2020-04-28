@@ -13,6 +13,7 @@ const enum EndPoint {
   Clan_SearchClan             = '/index.php/clan/search_clan',
   Clan_Info                   = '/index.php/clan/info',
   Clan_OthersInfo             = '/index.php/clan/others_info',
+  ClanBattle_PeriodRanking    = '/index.php/clan_battle/period_ranking',
 }
 
 export default EndPoint;

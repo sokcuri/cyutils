@@ -1,6 +1,6 @@
 {
     "name": "cyutils",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "",
     "main": "src/cyutils.js",
     "types": "src/cyutils.d.ts",
