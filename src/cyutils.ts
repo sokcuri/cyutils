@@ -222,4 +222,8 @@ export class CyUtils {
   public async getProfile(targetId: number) {
     return await Priconne.Profile.GetProfile(this.auth, targetId);
   }
+
+  public async getPeriodRanking(clanId: number, clanBattleId: number, period: number, month: number, page: number, isMyClan: number, isFirst: number) {
+    return await Priconne.ClanBattle.PeriodRanking(this.auth, clanId, clanBattleId, period, month, page, isMyClan, isFirst);
+  }
 }
